@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 
 import App from './App';
+
+// Saga Imports
+import createSagaMiddleware from 'redux-saga';
+import logger from 'redux-logger';
+import {takeEvery, put} from 'redux-saga/effects';
 
 // this startingPlantArray should eventually be removed
 const startingPlantArray = [
@@ -21,9 +26,29 @@ const plantList = (state = startingPlantArray, action) => {
   }
 };
 
+function* fetchPlants() {
+  try{
+    const plantsResponse = yield axios.get('/api/plant');
+    yield put({ type: 'SET_PLANTS', payload: plantsResponse.data})
+  } catch (error) {
+    console.log('Error Fetching Plants', error);
+  }
+}
+
+function* rootSaga() {
+  yield takeEvery('FETCH_PLANTS', fetchPlants)
+}
+
+const sagaMiddleware = createSagaMiddleware();
+
 const store = createStore(
-  combineReducers({ plantList }),
+  combineReducers({ 
+    plantList 
+    }),
+    applyMiddleware(sagaMiddleware, logger),
 );
+
+sagaMiddleware.run(rootSaga)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
