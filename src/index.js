@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-
+import axios from 'axios';
 import App from './App';
 
 // Saga Imports
@@ -11,16 +11,15 @@ import logger from 'redux-logger';
 import {takeLatest, put} from 'redux-saga/effects';
 
 // this startingPlantArray should eventually be removed
-const startingPlantArray = [
-  { id: 1, name: 'Rose' },
-  { id: 2, name: 'Tulip' },
-  { id: 3, name: 'Oak' }
-];
+const startingPlantArray = [];
 
 const plantList = (state = startingPlantArray, action) => {
   switch (action.type) {
     case 'ADD_PLANT':
       return [ ...state, action.payload ]
+    case 'SET_PLANTS':
+      // This will replace all exsisting plants
+      return action.payload;
     default:
       return state;
   }
@@ -28,16 +27,18 @@ const plantList = (state = startingPlantArray, action) => {
 
 function* fetchPlants() {
   try{
-    const plantsResponse = yield axios.get('/api/plant');
-    yield put({ type: 'SET_PLANTS', payload: plantsResponse.data})
+   const response = yield axios.get('/api/plant');
+   const action = {type:'SET_PLANTS', payload: response.data};
+   // put is the same as dispatch
+   yield put(action)
   } catch (error) {
-    console.log('Error Fetching Plants', error);
+    console.log(`Error in fetch plants ${error}`);
   }
 }
 
 function* rootSaga() {
   //Setup all sagas
-  yield takeEvery('FETCH_PLANTS', fetchPlants)
+  yield takeLatest('FETCH_PLANTS', fetchPlants)
 }
 
 const sagaMiddleware = createSagaMiddleware();
