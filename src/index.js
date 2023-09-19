@@ -8,7 +8,7 @@ import App from './App';
 // Saga Imports
 import createSagaMiddleware from 'redux-saga';
 import logger from 'redux-logger';
-import {takeEvery, put} from 'redux-saga/effects';
+import {takeLatest, put} from 'redux-saga/effects';
 
 // this startingPlantArray should eventually be removed
 const startingPlantArray = [
@@ -36,6 +36,7 @@ function* fetchPlants() {
 }
 
 function* rootSaga() {
+  //Setup all sagas
   yield takeEvery('FETCH_PLANTS', fetchPlants)
 }
 
