@@ -36,9 +36,21 @@ function* fetchPlants() {
   }
 }
 
+function* sendPlantToSever (action) {
+  try {
+    yield axios.post('/api/plant', action.payload);
+    yield put({ type: 'FETCH_PLANTS' });
+  } catch {
+    alert('Something went wrong')
+    console.log(`Error in add plant: ${error}`);
+    throw error;
+  }
+}
+
 function* rootSaga() {
   //Setup all sagas
   yield takeLatest('FETCH_PLANTS', fetchPlants)
+  yield takeLatest('SEND_PLANT_TO_SERVER', sendPlantToSever)
 }
 
 const sagaMiddleware = createSagaMiddleware();

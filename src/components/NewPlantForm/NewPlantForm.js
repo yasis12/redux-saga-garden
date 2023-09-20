@@ -8,14 +8,14 @@ const NewPlantForm = () => {
     let [newPlant, setPlant] = useState({id: 4, name: ''});
 
     const handleNameChange = (event) => {
-        console.log('event happened');
+        console.log('event happened'); 
         //Similar to in redux -- we dont want to get rid of the id field when we update name
         setPlant({...newPlant, name: event.target.value})
     }
 
     const addNewPlant = event => {
         event.preventDefault();
-        dispatch({ type: 'ADD_PLANT', payload: newPlant });
+        dispatch({ type: 'SEND_PLANT_TO_SERVER', payload: newPlant });
         //updates the next plant to have a new id
         setPlant({id:newPlant.id + 1, name: ''});
     }
