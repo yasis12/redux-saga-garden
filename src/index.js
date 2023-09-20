@@ -47,11 +47,25 @@ function* sendPlantToSever (action) {
   }
 }
 
+function* removePlant(action) {
+  try {
+    yield axios.delete(`/api/plant/${action.payload}`)
+    yield put({ type: 'FETCH_PLANTS'});
+  } catch {
+    alert('something went wrong')
+    console.log(`error in removePlant ${error}`);
+    throw error;
+  }
+}
+
 function* rootSaga() {
   //Setup all sagas
   yield takeLatest('FETCH_PLANTS', fetchPlants)
   yield takeLatest('SEND_PLANT_TO_SERVER', sendPlantToSever)
+  yield takeLatest('REMOVE_PLANT', removePlant)
 }
+
+
 
 const sagaMiddleware = createSagaMiddleware();
 
